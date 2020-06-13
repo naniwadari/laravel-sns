@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Article;
+use App\Http\Requests\ArticleRequest;
 use Illuminate\Http\Request;
 
 class ArticleController extends Controller
@@ -13,6 +14,18 @@ class ArticleController extends Controller
 		return view('articles.index', ['articles' => $articles]);
 	}
 
+	public function store(ArticleRequest $request, Article $article)
+	{
+		$article->fill($request->all());
+		$article->user_id = $request->user()->id;
+		$article->save();
+		return redirect()->route('articles.index');
+	}
+
+	public function edit(Article $article)
+	{
+		return view('articles.edit', ['article' => $article]);
+	}
 	public function create()
 	{
 		return view('articles.create');
