@@ -8,12 +8,13 @@ class Sort
   public static function sort($collection)
   {
     $keys = ["C", "B", "A", "D"];
-    $sorted = $collection->sort(function ($first, $second) use ($keys) {
+    $ascKeys = ["C"];
+    $sorted = $collection->sort(function ($first, $second) use ($keys, $ascKeys) {
       foreach ($keys as $key) {
         //値が違う場合は比較処理
         if (self::isDiffrent($first, $second, $key)) {
-          $isDesc = self::decideOrder($key);
-          return self::compareColumn($first, $second, $key, $isDesc);
+          $isDesc = self::isDesc($key, $ascKeys);
+          return self::compareColumnForSort($first, $second, $key, $isDesc);
         }
         //同じ場合はこのkeyの比較をスキップ
         continue;
@@ -32,7 +33,7 @@ class Sort
   }
 
   //カラム内容の比較、orderによって返す値を変える
-  public static function compareColumn($first, $second, $key, $isDesc)
+  public static function compareColumnForSort($first, $second, $key, $isDesc)
   {
     if ($first->$key > $second->$key) {
       return $isDesc ? -1 : 1;
@@ -40,13 +41,14 @@ class Sort
     return $isDesc ? 1 : -1;
   }
 
-  //key情報をみてASCかどうかを判断
-  public static function decideOrder($key)
+  //key情報をみてDESCかどうかを判断
+  public static function isDesc($key, $ascKeys)
   {
-    if ($key === "C") {
-      return false;
+    $isDesc = true;
+    if (in_array($key, $ascKeys)) {
+      $isDesc = false;
     }
-    return true;
+    return $isDesc;
   }
 
   //サンプルデータ作成用メソッド//
